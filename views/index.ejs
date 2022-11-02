@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no\" />
+  <link rel="stylesheet" href="../style.css" />
+  <link rel="stylesheet" href="../home.css" />
+ 
+  <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
+  <title>CONTROL</title>
+</head>
+
+<body>
+  <h1>Smart Watering Controller</h1>
+  <div>
+    <div class="clock" id="clock" name="clock"></div>
+  </div>
+  <div class="body-container">
+    <!-- Daily Env Part -->
+    <div class="container-env">
+      <iframe style="background: #FFFFFF;border: none;border-radius: 2px;box-shadow: 0 2px 10px 0 rgba(70, 76, 79, .2);" width="480" height="360" src="https://charts.mongodb.com/charts-embedded-sys-csjfj/embed/charts?id=62964bf0-cb9e-4ae3-8913-564855462547&maxDataAge=3600&theme=light&autoRefresh=true"></iframe>
+      <iframe style="background: #FFFFFF;border: none;border-radius: 2px;box-shadow: 0 2px 10px 0 rgba(70, 76, 79, .2);" width="480" height="360" src="https://charts.mongodb.com/charts-embedded-sys-csjfj/embed/charts?id=6296540c-cb9e-4e12-8134-5648554f7599&maxDataAge=3600&theme=light&autoRefresh=true"></iframe>
+    </div>
+    <!-- controller part -->
+    <div class="container-control">
+      <input type="hidden"  id="time" value="<%= timeout %>" />
+      <input type="hidden"  id="cooldown" value="<%= cooldownEnd %>" />
+      <input type="hidden"  id="isOn" value="<% if(isActive){ %>on<% }else{%>off<%}%>" />
+      <input type="hidden"  id="cooldownDate" value="<%= cooldownDate %>" />
+      <p style="font-size: 24px" id="water-status">
+        Water Status: <% if(isActive){ %> On <% }else{%> Off <%}%>
+      </p>
+      <% if (isActive && !isDisabled && !isCooldown) { %>
+        <button class="button button-on" id="button-status" type="button" onclick="btnStatus()">
+          <p>ON</p>
+        </button>
+        
+        <% } else if(isDisabled && !isCooldown) { %>
+          <button class="button button-off" id="button-status" onclick="btnStatus()" type="button" disabled>
+            <p>DISABLE</p>
+          </button>
+
+          <% } else if(isCooldown){ %>
+            <button class="button button-on" id="button-status" type="button" onclick="btnStatus()" disabled>
+              <p>COOLING DOWN</p>
+            </button>
+            <% } else { %>
+            <button class="button button-off" id="button-status" type="button" onclick="btnStatus()">
+              <p>OFF</p>
+            </button>
+            <%} %>
+
+              <p style="font-size: 24px">Amount of water to fill</p>
+
+              <div class="form__group field" id="water-value">
+                <% if(isActive|| isCooldown || isDisabled){ %>
+                  <label for="Amount" class="form__fieldblock">
+                    Wait for Watering ...
+                  </label>
+
+                  <%} else { %>
+                    <div class="form__box field" id="water-value">
+                      <input type="number" class="form__field" placeholder="Amount" name="Amount" id="water-amount"
+                        required min="4.44" max="1114.44" step="4.44" onchange="waterAmountChangeHandler()"/>
+                      <label for="water-amount" class="form__label">Amount (mL)</label>
+                    </div>
+                    <button class="button button-log" id="submit-water" onclick="sendWater()">
+                      Submit
+                    </button>
+
+                    <%} %>
+              </div>
+              <div id = "cdTime" class = "hidden">Cooldown
+                <div id = "cooldownTime"></div>
+              </div>
+    </div>
+
+    <%
+    function waterTickTomL(tick){
+      let numTick = Number(tick)
+      return Math.round(tick * 2.22 *100)/100;
+    };%>
+
+    <!-- info part -->
+    <div class="container-info">
+      <h2>Information</h2>
+      <div class="pill">
+        <h6>Light </h6>
+        <p id="light">
+          <%= Math.round((Number(latest[0].light)-500)/(33-5)*100)/100 %> %
+        </p>
+      </div>
+      <div class="pill">
+        <h6>Soil Humidity</h6>
+        <p id="humid">
+          <%= Math.round((Number(latest[0].humid)/32)*100)/100 %> %
+        </p>
+      </div>
+      <div class="pill">
+        <h6>Prev Watering </h6>
+        <p id="water">
+          <%= waterTickTomL(latest[0].water) %> mL
+        </p>
+      </div>
+      <p>updated: <%= (new Date(latest[0].time)).toLocaleString() %>
+      </p>
+      <a class="button button-get-info" style="margin: 0px auto 35px" href='/refresh'>Refresh</a>
+      <p style="font-size: 24px">History</p>
+      <!-- <a class="button button-getinformation" href="/getinformation"
+          >SubmitXnoNeed</a
+        > -->
+      <a class="button button-log" style="margin: 0px auto 35px" href="/log?id=0">log</a>
+ 
+    </div>
+  </div>
+  <script src="https://code.jquery.com/jquery-3.6.0.slim.min.js"
+    integrity="sha256-u7e5khyithlIdTpu22PHhENmPcRdFiHRjhAuHcs05RI=" crossorigin="anonymous"></script>
+    <script src="../inputHandler.js"></script>
+    <script src="../function.js"></script>
+ 
+</body>
+
+</html>

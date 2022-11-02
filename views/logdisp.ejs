@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, user-scalable=no\"
+    />
+    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="../logdisp.css">
+    <%
+    function waterTickTomL(tick){
+      let numTick = Number(tick)
+      return Math.round(tick * 2.22 *100)/100;
+    };%>
+  
+    <title>Log Display</title>
+  </head>
+
+  <body>
+    
+    <h1 style="margin: 0;">History</h1>
+    <div class="container-table">
+      <table class="log-table">
+        <thead>
+          <tr class="table-head">
+            <th>Time</th>
+            <th>Light Intensity</th>
+            <th>Soil Humidity</th>
+            <th>Last Watering</th>
+          </tr>
+        </thead>
+        
+        <!-- for each element in log list -->
+        <% data.forEach(element => { %>
+          
+
+            <tr>
+              
+                <td><%= (new Date(element.time)).toLocaleString()%></td>
+                <td><%= Math.round((Number(element.light)-500)/(33-5)*100)/100 %>  %> %</td>
+                <td><%=  Math.round((Number(element.humid)/32)*100)/100  %> %</td>
+                <td><%= waterTickTomL(element.water) %> mL</td>
+              
+            </tr>
+        <% }) %>
+      </table>
+      <div class="log-redirect">
+        <a <% if(Number(id) == 0) { %> style="visibility: hidden;"<% } %> class="button button-on" href="/log?id=<%=Number(id)-9 %>">prev</a>
+        <a <% if(Number(id) +9 >= DocSize) { %> style="visibility: hidden;"<% } %>class="button button-on" href="/log?id=<%=Number(id)+9 %>">next</a>
+        <a class="button button-on" href="/" style="position: absolute; right: 50px;">home</a>
+      </div>
+      <div id="page"><%= (Number(id)/9+1) %> </div>
+
+    </div>
+  </body>
+</html>
